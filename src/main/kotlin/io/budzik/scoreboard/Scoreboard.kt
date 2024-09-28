@@ -28,7 +28,14 @@ class Scoreboard {
     }
 
     fun updateGame(gameId: GameId, homeScore: Short, awayScore: Short): Game {
-        TODO()
+        val game = games[gameId] ?: throw IllegalArgumentException("Invalid game ID: [$gameId]").also { log.error(it.message) }
+        if (homeScore < 0 || awayScore < 0) {
+            throw IllegalArgumentException("All scores should be non-negative.").also { log.error(it.message) }
+        }
+        val newGame = game.copy(homeScore = homeScore, awayScore = awayScore)
+        games[gameId] = newGame
+        log.debug("Updated a game with ID [$gameId]. New state: [$newGame].")
+        return newGame
     }
 
     fun finishGame(gameId: GameId) {

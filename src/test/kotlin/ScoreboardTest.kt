@@ -1,4 +1,5 @@
 import io.budzik.scoreboard.Scoreboard
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.should
@@ -40,6 +41,13 @@ class ScoreboardTest : ShouldSpec({
             val game = scoreboard.startGame(homeTeam = "Mexico", awayTeam = "Germany")
             assertThrows<IllegalArgumentException> {
                 scoreboard.updateGame(game.gameId, -1, 0)
+            }
+        }
+
+        should("throw error when trying to update non existing game") {
+            val scoreboard = Scoreboard()
+            shouldThrow<IllegalArgumentException> {
+                scoreboard.updateGame(1, 1, 2)
             }
         }
 
