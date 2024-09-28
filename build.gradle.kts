@@ -1,12 +1,17 @@
 plugins {
     kotlin("jvm") version "2.0.10"
+    `java-library`
 }
 
 group = "io.budzik"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 repositories {
     mavenCentral()
+}
+
+java {
+    withSourcesJar()
 }
 
 val kotestVersion = "5.9.1"
