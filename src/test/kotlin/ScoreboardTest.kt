@@ -3,6 +3,7 @@ import io.budzik.scoreboard.model.GameAlreadyExistsError
 import io.budzik.scoreboard.model.GameNotFoundError
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.ShouldSpec
+import io.kotest.matchers.collections.shouldMatchInOrder
 import io.kotest.matchers.equals.shouldBeEqual
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -94,6 +95,31 @@ class ScoreboardTest : ShouldSpec({
             shouldThrow<GameNotFoundError> {
                 scoreboard.finishGame(1)
             }
+        }
+
+        should("pass scoreboard ordering acceptance test") {
+            val scoreboard = Scoreboard()
+            val games = listOf(
+                Pair(("Mexico" to "Canada"), (0 to 5)),
+                Pair(("Spain" to "Brazil"), (10 to 2)),
+                Pair(("Germany" to "France"), (2 to 2)),
+                Pair(("Uruguay" to "Italy"), (6 to 6)),
+                Pair(("Argentina" to "Australia"), (3 to 1)),
+            )
+            games.forEach { (teams, scores) ->
+                val (homeTeam, awayTeam) = teams
+                val (homeScore, awayScore) = scores
+                val game = scoreboard.startGame(homeTeam, awayTeam)
+                scoreboard.updateGame(game.gameId, homeScore.toShort(), awayScore.toShort())
+            }
+            val result = scoreboard.getSummary()
+            result shouldMatchInOrder listOf(
+                { game -> game.homeTeam shouldBe "Uruguay"; game.awayTeam shouldBe "Italy" },
+                { game -> game.homeTeam shouldBe "Spain"; game.awayTeam shouldBe "Brazil" },
+                { game -> game.homeTeam shouldBe "Mexico"; game.awayTeam shouldBe "Canada" },
+                { game -> game.homeTeam shouldBe "Argentina"; game.awayTeam shouldBe "Australia" },
+                { game -> game.homeTeam shouldBe "Germany"; game.awayTeam shouldBe "France" },
+            )
         }
     }
 })
