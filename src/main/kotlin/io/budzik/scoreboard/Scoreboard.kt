@@ -42,5 +42,8 @@ class Scoreboard {
         TODO()
     }
 
-    fun getSummary(): List<Game> = games.values.toList()
+    private val gameComparator = compareByDescending<Game> { it.homeScore + it.awayScore }
+        .thenByDescending { it.startTime }
+
+    fun getSummary(): List<Game> = games.values.sortedWith(gameComparator)
 }
