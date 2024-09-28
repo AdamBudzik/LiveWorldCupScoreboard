@@ -1,4 +1,6 @@
 import io.budzik.scoreboard.Scoreboard
+import io.budzik.scoreboard.model.GameAlreadyExistsError
+import io.budzik.scoreboard.model.GameNotFoundError
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.ShouldSpec
 import io.kotest.matchers.equals.shouldBeEqual
@@ -36,6 +38,16 @@ class ScoreboardTest : ShouldSpec({
             }
         }
 
+
+        should("throw error when trying to start a game with a team that already plays") {
+            val scoreboard = Scoreboard()
+            val existingGame = scoreboard.startGame(homeTeam = "Mexico", awayTeam = "Germany")
+            val error = shouldThrow<GameAlreadyExistsError> {
+                scoreboard.startGame(awayTeam = "Germany", homeTeam = "Mexico")
+            }
+            error.existingGame shouldBe existingGame
+        }
+
         should("not allow negative scores while updating game score") {
             val scoreboard = Scoreboard()
             val game = scoreboard.startGame(homeTeam = "Mexico", awayTeam = "Germany")
@@ -46,7 +58,7 @@ class ScoreboardTest : ShouldSpec({
 
         should("throw error when trying to update non existing game") {
             val scoreboard = Scoreboard()
-            shouldThrow<IllegalArgumentException> {
+            shouldThrow<GameNotFoundError> {
                 scoreboard.updateGame(1, 1, 2)
             }
         }
@@ -75,6 +87,13 @@ class ScoreboardTest : ShouldSpec({
             val game = scoreboard.startGame(homeTeam = "Mexico", awayTeam = "Germany")
             scoreboard.finishGame(game.gameId)
             scoreboard.getSummary().size shouldBe 0
+        }
+
+        should("throw error when trying to finish non existing game") {
+            val scoreboard = Scoreboard()
+            shouldThrow<GameNotFoundError> {
+                scoreboard.finishGame(1)
+            }
         }
     }
 })

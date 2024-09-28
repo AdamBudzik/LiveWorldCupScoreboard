@@ -1,7 +1,9 @@
 package io.budzik.scoreboard
 
 import io.budzik.scoreboard.model.Game
+import io.budzik.scoreboard.model.GameAlreadyExistsError
 import io.budzik.scoreboard.model.GameId
+import io.budzik.scoreboard.model.GameNotFoundError
 import org.slf4j.LoggerFactory
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -13,6 +15,9 @@ class Scoreboard {
     private val log = LoggerFactory.getLogger(Scoreboard::class.java)
 
     fun startGame(homeTeam: String, awayTeam: String): Game {
+        findGameWithAnyOfTeams(homeTeam, awayTeam)?.let { existingGame ->
+            throw GameAlreadyExistsError(homeTeam, awayTeam, existingGame).also { log.error(it.message) }
+        }
         val id = gameIdCounter.incrementAndGet()
         val game = Game(
             homeTeam = homeTeam,
@@ -28,7 +33,7 @@ class Scoreboard {
     }
 
     fun updateGame(gameId: GameId, homeScore: Short, awayScore: Short): Game {
-        val game = games[gameId] ?: throw IllegalArgumentException("Invalid game ID: [$gameId]").also { log.error(it.message) }
+        val game = games[gameId] ?: throw GameNotFoundError(gameId).also { log.error(it.message) }
         if (homeScore < 0 || awayScore < 0) {
             throw IllegalArgumentException("All scores should be non-negative.").also { log.error(it.message) }
         }
@@ -39,11 +44,21 @@ class Scoreboard {
     }
 
     fun finishGame(gameId: GameId) {
-        TODO()
+        if (!games.containsKey(gameId)) {
+            throw GameNotFoundError(gameId).also { log.error(it.message) }
+        }
+        games.remove(gameId)
+        log.debug("Finished game with ID [$gameId].")
     }
 
     private val gameComparator = compareByDescending<Game> { it.homeScore + it.awayScore }
         .thenByDescending { it.startTime }
 
     fun getSummary(): List<Game> = games.values.sortedWith(gameComparator)
+
+    private fun findGameWithAnyOfTeams(homeTeam: String, awayTeam: String): Game? =
+        games.values.find {
+            listOf(it.homeTeam, it.awayTeam)
+                .any { playingTeam -> playingTeam == homeTeam || playingTeam == awayTeam }
+        }
 }
