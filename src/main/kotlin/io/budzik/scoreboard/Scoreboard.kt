@@ -15,7 +15,7 @@ class Scoreboard {
     private val log = LoggerFactory.getLogger(Scoreboard::class.java)
 
     fun startGame(homeTeam: String, awayTeam: String): Game {
-        findGameWithAnyOfTeams(homeTeam, awayTeam)?.let { existingGame ->
+        findGameWithAnyOfTheTeams(homeTeam, awayTeam)?.let { existingGame ->
             throw GameAlreadyExistsError(homeTeam, awayTeam, existingGame).also { log.error(it.message) }
         }
         val id = gameIdCounter.incrementAndGet()
@@ -56,9 +56,12 @@ class Scoreboard {
 
     fun getSummary(): List<Game> = games.values.sortedWith(gameComparator)
 
-    private fun findGameWithAnyOfTeams(homeTeam: String, awayTeam: String): Game? =
-        games.values.find {
-            listOf(it.homeTeam, it.awayTeam)
-                .any { playingTeam -> playingTeam == homeTeam || playingTeam == awayTeam }
+    private fun findGameWithAnyOfTheTeams(homeTeam: String, awayTeam: String): Game? {
+        val searchedTeams = listOf(homeTeam, awayTeam)
+        return games.values.find {
+            listOf(it.homeTeam, it.awayTeam).any { playingTeam ->
+                searchedTeams.any { seachedTeam -> seachedTeam.equals(playingTeam, ignoreCase = true) }
+            }
         }
+    }
 }
