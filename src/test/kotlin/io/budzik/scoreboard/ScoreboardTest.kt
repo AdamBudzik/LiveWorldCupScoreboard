@@ -1,4 +1,5 @@
-import io.budzik.scoreboard.Scoreboard
+package io.budzik.scoreboard
+
 import io.budzik.scoreboard.model.GameAlreadyExistsError
 import io.budzik.scoreboard.model.GameNotFoundError
 import io.kotest.assertions.throwables.shouldThrow
@@ -97,7 +98,7 @@ class ScoreboardTest : ShouldSpec({
             }
         }
 
-        should("pass scoreboard ordering acceptance test") {
+        should("pass the scoreboard ordering acceptance test") {
             val scoreboard = Scoreboard()
             val games = listOf(
                 Pair(("Mexico" to "Canada"), (0 to 5)),

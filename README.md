@@ -95,12 +95,14 @@ val games = scoreboard.getSummary()
 scoreboard.finishGame(game.gameId)
 ```
 
-More examples in [ScoreboardTest.kt](src/test/kotlin/ScoreboardTest.kt)
+More examples in [ScoreboardTest.kt](src/test/kotlin/io/budzik/scoreboard/ScoreboardTest.kt).
 
 ## Project Build
 
-To build the project, use the Gradle `build` task. You can execute it via the Gradle wrapper with the following command: `./gradlew build`
+To build the project, use the Gradle `build` task. You can execute it via the Gradle wrapper with the following command:
+`./gradlew build`
 This task will compile the project, run all tests and generate the following output:
+
 - The library JAR,
 - The sources JAR.
 
