@@ -28,7 +28,7 @@ The scoreboard supports the following operations:
 
 ### startGame(homeTeam: String, awayTeam: String): Game
 
-Starts a new game for given a pair of home and away team.
+Starts a new game for a given a pair of home and away team.
 The initial game score is 0-0.
 
 #### Returns
@@ -97,12 +97,12 @@ scoreboard.finishGame(game.gameId)
 
 More examples in [ScoreboardTest.kt](src/test/kotlin/ScoreboardTest.kt)
 
-## Building
+## Project Build
 
-To build a project use `./gradlew build`. This task compiles the project, runs the tests and outputs:
-
-- library jar
-- sources jar
+To build the project, use the Gradle `build` task. You can execute it via the Gradle wrapper with the following command: `./gradlew build`
+This task will compile the project, run all tests and generate the following output:
+- The library JAR,
+- The sources JAR.
 
 ### Technical Requirements
 
@@ -110,5 +110,12 @@ To build a project use `./gradlew build`. This task compiles the project, runs t
 
 ## Assumptions
 
-- This library is designed for Live **Football** World Cup Score. It does not support other kinds of sports.
-- One team can play only one game at a given time.
+- This library is specifically designed for managing live scores in Football World Cup matches. It does not support
+  other sports.
+- A team can participate in only one game at any given time.
+- The implementation is intentionally simple. The following features were omitted:
+- Additional interfaces (e.g., for the Scoreboard),
+- Extra types (e.g., for Team, Score),
+- Complex validation of existing games or scores.
+- The library is written in Kotlin, a language I've been working with extensively for the past few years and feel most
+  comfortable with.
